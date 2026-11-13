@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class ObservationController extends Controller
@@ -95,7 +96,40 @@ class ObservationController extends Controller
             'action_required' => ['required', 'string'],
             'target_escalation_date' => ['required', 'date'],
             'areas_for_improvement' => ['nullable', 'string'],
+            'idempotency_key' => ['nullable', 'string', 'max:100'],
         ]);
+
+        // Server-Side Idempotency Check (TR1001)
+        $idempotencyKey = $request->header('X-Idempotency-Key') ?? $validated['idempotency_key'] ?? null;
+        if ($idempotencyKey) {
+            $cacheKey = "idempotency:observation:{$user->id}:{$idempotencyKey}";
+            $cachedId = Cache::get($cacheKey);
+            if ($cachedId) {
+                $cachedObs = AuditObservation::find($cachedId);
+                if ($cachedObs) {
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'Observation logged successfully.',
+                        'data' => $cachedObs->load(['store.area', 'supervisor']),
+                    ], 200);
+                }
+            }
+        }
+
+        // Secondary debounce check (10 second window for exact duplicate content)
+        $recentDuplicate = AuditObservation::where('store_id', $validated['store_id'])
+            ->where('supervisor_id', $user->id)
+            ->where('issue_description', $validated['issue_description'])
+            ->where('created_at', '>=', now()->subSeconds(10))
+            ->first();
+
+        if ($recentDuplicate) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Observation logged successfully.',
+                'data' => $recentDuplicate->load(['store.area', 'supervisor']),
+            ], 200);
+        }
 
         $observation = AuditObservation::create([
             'store_id' => $validated['store_id'],
@@ -110,6 +144,10 @@ class ObservationController extends Controller
             'areas_for_improvement' => $validated['areas_for_improvement'] ?? null,
             'status' => 'open',
         ]);
+
+        if ($idempotencyKey) {
+            Cache::put("idempotency:observation:{$user->id}:{$idempotencyKey}", $observation->id, 120);
+        }
 
         $this->auditLogService->log($observation, 'created', null, $observation->toArray(), $user);
 

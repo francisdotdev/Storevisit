@@ -193,11 +193,13 @@ class VisitAuditController extends Controller
             abort(403, 'Unauthorized.');
         }
 
+        // Idempotency check: if already submitted, return the existing submitted audit cleanly
         if ($visitAudit->status === 'submitted') {
             return response()->json([
-                'status' => 'error',
-                'message' => 'This audit has already been submitted.',
-            ], 422);
+                'status' => 'success',
+                'message' => 'Audit submitted successfully.',
+                'data' => $this->formatVisitAuditPayload($visitAudit->fresh()),
+            ]);
         }
 
         // Verify that all answers are provided

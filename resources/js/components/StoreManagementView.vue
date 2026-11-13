@@ -49,10 +49,10 @@
             v-if="activeSubTab === 'stores' && canManageStores"
             type="button"
             @click="openAddStoreModal"
-            class="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-md bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-medium transition-colors"
+            class="min-h-[44px] inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white text-xs font-semibold transition-colors shadow-xs"
           >
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 4v16m8-8H4" />
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
             <span>Add Store</span>
           </button>
@@ -61,10 +61,10 @@
             v-if="activeSubTab === 'areas' && canManageAreas"
             type="button"
             @click="openAddAreaModal"
-            class="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-md bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-medium transition-colors"
+            class="min-h-[44px] inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white text-xs font-semibold transition-colors shadow-xs"
           >
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 4v16m8-8H4" />
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
             <span>Add Area</span>
           </button>
@@ -418,76 +418,76 @@
     <!-- ============================================================= -->
     <!-- MODAL: ADD / EDIT STORE                                        -->
     <!-- ============================================================= -->
-    <div v-if="showStoreModal" class="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="bg-white rounded-lg max-w-md w-full p-5 shadow-lg border border-neutral-200">
-        <div class="flex items-center justify-between pb-3 border-b border-neutral-100">
-          <h3 class="text-sm font-semibold text-neutral-900">{{ isEditingStore ? 'Edit Store Branch' : 'Add New Store Branch' }}</h3>
-          <button @click="showStoreModal = false" class="text-neutral-400 hover:text-neutral-600">&times;</button>
+    <div v-if="showStoreModal" class="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div class="bg-white rounded-t-2xl sm:rounded-xl max-w-lg w-full h-[90vh] sm:h-auto flex flex-col p-5 sm:p-6 shadow-xl border border-neutral-200 text-xs">
+        <div class="flex items-center justify-between pb-3 border-b border-neutral-100 shrink-0">
+          <h3 class="text-sm font-bold text-neutral-900">{{ isEditingStore ? 'Edit Store Branch' : 'Add New Store Branch' }}</h3>
+          <button @click="showStoreModal = false" class="min-h-[44px] min-w-[44px] flex items-center justify-center text-neutral-400 hover:text-neutral-700 text-lg">&times;</button>
         </div>
 
-        <form @submit.prevent="submitStoreForm" class="space-y-3.5 mt-3 text-xs">
+        <form @submit.prevent="submitStoreForm" class="space-y-4 mt-4 overflow-y-auto flex-1 pr-1">
           <!-- Area Selection -->
           <div>
             <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-              Select Area Location <span class="text-neutral-400">*</span>
+              Select Area Location <span class="text-rose-500">*</span>
             </label>
             <select
               v-model="storeForm.area_id"
               required
-              class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 bg-white text-xs focus:border-neutral-900 focus:ring-0"
+              class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 bg-white text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
             >
               <option value="" disabled>Choose area location...</option>
               <option v-for="a in areasDropdown" :key="a.id" :value="a.id">
                 {{ a.area_name }} ({{ a.area_code }})
               </option>
             </select>
-            <p v-if="storeErrors.area_id" class="mt-1 text-[11px] text-rose-600">{{ storeErrors.area_id[0] }}</p>
+            <p v-if="storeErrors.area_id" class="mt-1 text-[11px] text-rose-600 font-medium">{{ storeErrors.area_id[0] }}</p>
           </div>
 
           <!-- Store Code -->
           <div>
             <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-              Store Code <span class="text-neutral-400">*</span>
+              Store Code <span class="text-rose-500">*</span>
             </label>
             <input
               v-model.trim="storeForm.store_code"
               type="text"
               required
               placeholder="e.g. STR-NAGA-01"
-              class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
+              class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
             />
-            <p v-if="storeErrors.store_code" class="mt-1 text-[11px] text-rose-600">{{ storeErrors.store_code[0] }}</p>
+            <p v-if="storeErrors.store_code" class="mt-1 text-[11px] text-rose-600 font-medium">{{ storeErrors.store_code[0] }}</p>
           </div>
 
           <!-- Store Name -->
           <div>
             <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-              Store Name <span class="text-neutral-400">*</span>
+              Store Name <span class="text-rose-500">*</span>
             </label>
             <input
               v-model.trim="storeForm.store_name"
               type="text"
               required
               placeholder="e.g. LCC Supermarket Naga"
-              class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
+              class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
             />
-            <p v-if="storeErrors.store_name" class="mt-1 text-[11px] text-rose-600">{{ storeErrors.store_name[0] }}</p>
+            <p v-if="storeErrors.store_name" class="mt-1 text-[11px] text-rose-600 font-medium">{{ storeErrors.store_name[0] }}</p>
           </div>
 
           <!-- Status -->
-          <div class="flex items-center space-x-2 pt-1">
+          <div class="flex items-center space-x-2.5 pt-1">
             <input
               id="store_active"
               v-model="storeForm.is_active"
               type="checkbox"
-              class="w-3.5 h-3.5 rounded border-neutral-300 text-neutral-900 focus:ring-0"
+              class="w-4 h-4 rounded border-neutral-300 text-brand-600 focus:ring-brand-500"
             />
-            <label for="store_active" class="text-xs text-neutral-700">Active branch</label>
+            <label for="store_active" class="text-xs font-semibold text-neutral-700 cursor-pointer">Active store branch</label>
           </div>
 
-          <div class="flex items-center justify-end space-x-2 pt-3 border-t border-neutral-100">
-            <button type="button" @click="showStoreModal = false" class="px-3 py-1.5 text-xs text-neutral-600 hover:text-neutral-900">Cancel</button>
-            <button type="submit" :disabled="isSubmittingStore" class="px-3.5 py-1.5 text-xs font-medium bg-neutral-900 hover:bg-neutral-800 text-white rounded-md transition-colors">
+          <div class="sticky bottom-0 bg-white pt-4 pb-2 border-t border-neutral-100 flex items-center justify-end space-x-3 shrink-0">
+            <button type="button" @click="showStoreModal = false" class="min-h-[44px] px-4 py-2 text-neutral-600 hover:text-neutral-900 font-medium">Cancel</button>
+            <button type="submit" :disabled="isSubmittingStore" class="min-h-[44px] px-5 py-2 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white rounded-lg font-semibold text-xs shadow-xs disabled:opacity-50">
               {{ isSubmittingStore ? 'Saving...' : 'Save Store' }}
             </button>
           </div>
@@ -498,58 +498,58 @@
     <!-- ============================================================= -->
     <!-- MODAL: ADD / EDIT AREA                                         -->
     <!-- ============================================================= -->
-    <div v-if="showAreaModal" class="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="bg-white rounded-lg max-w-md w-full p-5 shadow-lg border border-neutral-200">
-        <div class="flex items-center justify-between pb-3 border-b border-neutral-100">
-          <h3 class="text-sm font-semibold text-neutral-900">{{ isEditingArea ? 'Edit Geographic Area' : 'Add Geographic Area' }}</h3>
-          <button @click="showAreaModal = false" class="text-neutral-400 hover:text-neutral-600">&times;</button>
+    <div v-if="showAreaModal" class="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div class="bg-white rounded-t-2xl sm:rounded-xl max-w-lg w-full h-[90vh] sm:h-auto flex flex-col p-5 sm:p-6 shadow-xl border border-neutral-200 text-xs">
+        <div class="flex items-center justify-between pb-3 border-b border-neutral-100 shrink-0">
+          <h3 class="text-sm font-bold text-neutral-900">{{ isEditingArea ? 'Edit Geographic Area' : 'Add Geographic Area' }}</h3>
+          <button @click="showAreaModal = false" class="min-h-[44px] min-w-[44px] flex items-center justify-center text-neutral-400 hover:text-neutral-700 text-lg">&times;</button>
         </div>
 
-        <form @submit.prevent="submitAreaForm" class="space-y-3.5 mt-3 text-xs">
+        <form @submit.prevent="submitAreaForm" class="space-y-4 mt-4 overflow-y-auto flex-1 pr-1">
           <!-- Area Code -->
           <div>
             <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-              Area Code <span class="text-neutral-400">*</span>
+              Area Code <span class="text-rose-500">*</span>
             </label>
             <input
               v-model.trim="areaForm.area_code"
               type="text"
               required
               placeholder="e.g. AREA-CAM-SUR"
-              class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
+              class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
             />
-            <p v-if="areaErrors.area_code" class="mt-1 text-[11px] text-rose-600">{{ areaErrors.area_code[0] }}</p>
+            <p v-if="areaErrors.area_code" class="mt-1 text-[11px] text-rose-600 font-medium">{{ areaErrors.area_code[0] }}</p>
           </div>
 
           <!-- Area Name -->
           <div>
             <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-              Area Name <span class="text-neutral-400">*</span>
+              Area Name <span class="text-rose-500">*</span>
             </label>
             <input
               v-model.trim="areaForm.area_name"
               type="text"
               required
               placeholder="e.g. Camarines Sur Area"
-              class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
+              class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
             />
-            <p v-if="areaErrors.area_name" class="mt-1 text-[11px] text-rose-600">{{ areaErrors.area_name[0] }}</p>
+            <p v-if="areaErrors.area_name" class="mt-1 text-[11px] text-rose-600 font-medium">{{ areaErrors.area_name[0] }}</p>
           </div>
 
           <!-- Status -->
-          <div class="flex items-center space-x-2 pt-1">
+          <div class="flex items-center space-x-2.5 pt-1">
             <input
               id="area_active"
               v-model="areaForm.is_active"
               type="checkbox"
-              class="w-3.5 h-3.5 rounded border-neutral-300 text-neutral-900 focus:ring-0"
+              class="w-4 h-4 rounded border-neutral-300 text-brand-600 focus:ring-brand-500"
             />
-            <label for="area_active" class="text-xs text-neutral-700">Active area</label>
+            <label for="area_active" class="text-xs font-semibold text-neutral-700 cursor-pointer">Active area</label>
           </div>
 
-          <div class="flex items-center justify-end space-x-2 pt-3 border-t border-neutral-100">
-            <button type="button" @click="showAreaModal = false" class="px-3 py-1.5 text-xs text-neutral-600 hover:text-neutral-900">Cancel</button>
-            <button type="submit" :disabled="isSubmittingArea" class="px-3.5 py-1.5 text-xs font-medium bg-neutral-900 hover:bg-neutral-800 text-white rounded-md transition-colors">
+          <div class="sticky bottom-0 bg-white pt-4 pb-2 border-t border-neutral-100 flex items-center justify-end space-x-3 shrink-0">
+            <button type="button" @click="showAreaModal = false" class="min-h-[44px] px-4 py-2 text-neutral-600 hover:text-neutral-900 font-medium">Cancel</button>
+            <button type="submit" :disabled="isSubmittingArea" class="min-h-[44px] px-5 py-2 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white rounded-lg font-semibold text-xs shadow-xs disabled:opacity-50">
               {{ isSubmittingArea ? 'Saving...' : 'Save Area' }}
             </button>
           </div>
@@ -560,37 +560,37 @@
     <!-- ============================================================= -->
     <!-- MODAL: ASSIGN SUPERVISOR TO STORE                             -->
     <!-- ============================================================= -->
-    <div v-if="showAssignModal" class="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="bg-white rounded-lg max-w-lg w-full p-5 shadow-lg border border-neutral-200">
-        <div class="flex items-center justify-between pb-3 border-b border-neutral-100">
+    <div v-if="showAssignModal" class="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div class="bg-white rounded-t-2xl sm:rounded-xl max-w-lg w-full h-[90vh] sm:h-auto flex flex-col p-5 sm:p-6 shadow-xl border border-neutral-200 text-xs">
+        <div class="flex items-center justify-between pb-3 border-b border-neutral-100 shrink-0">
           <div>
-            <h3 class="text-sm font-semibold text-neutral-900">Assign Supervisor to Store</h3>
-            <p class="text-xs text-neutral-500 font-mono">{{ selectedStoreForAssign?.store_name }} ({{ selectedStoreForAssign?.store_code }})</p>
+            <h3 class="text-sm font-bold text-neutral-900">Assign Supervisor to Store</h3>
+            <p class="text-xs text-brand-700 font-mono font-medium mt-0.5">{{ selectedStoreForAssign?.store_name }} ({{ selectedStoreForAssign?.store_code }})</p>
           </div>
-          <button @click="showAssignModal = false" class="text-neutral-400 hover:text-neutral-600">&times;</button>
+          <button @click="showAssignModal = false" class="min-h-[44px] min-w-[44px] flex items-center justify-center text-neutral-400 hover:text-neutral-700 text-lg">&times;</button>
         </div>
 
-        <div class="space-y-3.5 mt-3 text-xs">
+        <div class="space-y-4 mt-4 overflow-y-auto flex-1 pr-1">
           <!-- Existing Assignments in this Store -->
-          <div class="p-3 bg-neutral-50 rounded-md border border-neutral-200 text-xs">
-            <span class="font-medium text-neutral-800 block mb-2 text-xs">Current Store Assignments:</span>
-            <div v-if="selectedStoreForAssign?.supervisor_assignments?.length" class="space-y-1.5">
+          <div class="p-3.5 bg-neutral-50 rounded-xl border border-neutral-200 text-xs">
+            <span class="font-bold text-neutral-800 block mb-2 text-xs">Current Store Assignments:</span>
+            <div v-if="selectedStoreForAssign?.supervisor_assignments?.length" class="space-y-2">
               <div
                 v-for="asg in selectedStoreForAssign.supervisor_assignments"
                 :key="asg.id"
-                class="flex items-center justify-between bg-white p-2 rounded border border-neutral-200"
+                class="flex items-center justify-between bg-white p-2.5 rounded-lg border border-neutral-200"
               >
                 <div>
-                  <span class="font-mono uppercase text-[10px] px-1.5 py-0.2 rounded mr-1 bg-neutral-100 border border-neutral-200 text-neutral-700">
+                  <span class="font-mono uppercase text-[10px] font-semibold px-2 py-0.5 rounded mr-1.5 bg-brand-50 border border-brand-100 text-brand-700">
                     {{ asg.audit_type }}
                   </span>
-                  <span class="font-medium text-neutral-800">{{ asg.supervisor?.first_name }} {{ asg.supervisor?.last_name }}</span>
-                  <span class="text-neutral-400 font-mono ml-1">({{ asg.supervisor?.employee_id }})</span>
+                  <span class="font-semibold text-neutral-800">{{ asg.supervisor?.first_name }} {{ asg.supervisor?.last_name }}</span>
+                  <span class="text-neutral-400 font-mono ml-1 text-[11px]">({{ asg.supervisor?.employee_id }})</span>
                 </div>
                 <button
                   type="button"
                   @click="removeAssignment(selectedStoreForAssign, asg)"
-                  class="text-neutral-500 hover:text-neutral-900 text-xs font-medium"
+                  class="min-h-[36px] px-2 text-rose-600 hover:text-rose-800 text-xs font-semibold"
                 >
                   Remove
                 </button>
@@ -600,16 +600,16 @@
           </div>
 
           <!-- New Assignment Form -->
-          <form @submit.prevent="submitAssignSupervisor" class="space-y-3 pt-1">
+          <form @submit.prevent="submitAssignSupervisor" class="space-y-4 pt-1">
             <div>
               <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-                Audit Department Type <span class="text-neutral-400">*</span>
+                Audit Department Type <span class="text-rose-500">*</span>
               </label>
               <select
                 v-model="assignForm.audit_type"
                 @change="loadEligibleSupervisors"
                 :disabled="!isAdmin && auditType !== null"
-                class="w-full px-2.5 py-1.5 text-xs rounded-md border border-neutral-200 bg-white focus:border-neutral-900 focus:ring-0"
+                class="w-full min-h-[44px] px-3 py-2 text-base sm:text-xs rounded-lg border border-neutral-300 bg-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
               >
                 <option value="treasury">Treasury</option>
                 <option value="cashier">Cashier</option>
@@ -618,12 +618,12 @@
 
             <div>
               <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-                Select Area Supervisor <span class="text-neutral-400">*</span>
+                Select Area Supervisor <span class="text-rose-500">*</span>
               </label>
               <select
                 v-model="assignForm.supervisor_id"
                 required
-                class="w-full px-2.5 py-1.5 text-xs rounded-md border border-neutral-200 bg-white focus:border-neutral-900 focus:ring-0"
+                class="w-full min-h-[44px] px-3 py-2 text-base sm:text-xs rounded-lg border border-neutral-300 bg-white focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
               >
                 <option value="" disabled>Choose supervisor...</option>
                 <option v-for="sup in eligibleSupervisors" :key="sup.id" :value="sup.id">
@@ -632,9 +632,9 @@
               </select>
             </div>
 
-            <div class="flex items-center justify-end space-x-2 pt-3 border-t border-neutral-100">
-              <button type="button" @click="showAssignModal = false" class="px-3 py-1.5 text-xs text-neutral-600 hover:text-neutral-900">Close</button>
-              <button type="submit" :disabled="isSubmittingAssign" class="px-3.5 py-1.5 text-xs font-medium bg-neutral-900 hover:bg-neutral-800 text-white rounded-md transition-colors">
+            <div class="sticky bottom-0 bg-white pt-4 pb-2 border-t border-neutral-100 flex items-center justify-end space-x-3 shrink-0">
+              <button type="button" @click="showAssignModal = false" class="min-h-[44px] px-4 py-2 text-neutral-600 hover:text-neutral-900 font-medium">Close</button>
+              <button type="submit" :disabled="isSubmittingAssign" class="min-h-[44px] px-5 py-2 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white rounded-lg font-semibold text-xs shadow-xs disabled:opacity-50">
                 {{ isSubmittingAssign ? 'Assigning...' : 'Confirm Assignment' }}
               </button>
             </div>

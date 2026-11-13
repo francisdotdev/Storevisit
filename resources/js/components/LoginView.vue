@@ -3,10 +3,10 @@
     <div class="w-full max-w-sm">
       <!-- Brand Card Header -->
       <div class="text-center mb-6">
-        <div class="inline-flex w-9 h-9 rounded bg-neutral-900 items-center justify-center text-white font-bold text-xs tracking-wider mb-3 shadow-xs">
+        <div class="inline-flex w-10 h-10 rounded-xl bg-brand-600 items-center justify-center text-white font-bold text-sm tracking-wider mb-3 shadow-sm">
           LCC
         </div>
-        <h1 class="text-lg font-semibold tracking-tight text-neutral-900">
+        <h1 class="text-xl font-bold tracking-tight text-neutral-900">
           Sign In
         </h1>
         <p class="mt-0.5 text-xs text-neutral-500">
@@ -15,19 +15,19 @@
       </div>
 
       <!-- Main Login Box -->
-      <div class="bg-white rounded-lg border border-neutral-200 p-6 shadow-xs">
+      <div class="bg-white rounded-2xl border border-neutral-200/80 p-6 shadow-sm">
         <!-- Status / Error Alerts -->
-        <div v-if="alertMessage" :class="alertClasses" class="mb-4 p-3 rounded-md flex items-start space-x-2 text-xs border">
+        <div v-if="alertMessage" :class="alertClasses" class="mb-4 p-3 rounded-xl flex items-start space-x-2 text-xs border">
           <div class="flex-1">
-            <span class="font-medium block mb-0.5">{{ alertTitle }}</span>
+            <span class="font-semibold block mb-0.5">{{ alertTitle }}</span>
             <p>{{ alertMessage }}</p>
           </div>
         </div>
 
-        <form @submit.prevent="handleSubmit" class="space-y-3.5 text-xs">
+        <form @submit.prevent="handleSubmit" class="space-y-4 text-xs">
           <!-- Login (Employee ID or Email) -->
           <div>
-            <label for="login" class="block text-[10px] font-mono uppercase tracking-wider text-neutral-500 mb-1">
+            <label for="login" class="block text-[10px] font-mono uppercase tracking-wider text-neutral-500 font-semibold mb-1">
               Employee ID or Email
             </label>
             <input
@@ -38,7 +38,7 @@
               autocomplete="username"
               placeholder="e.g. admin@lcc.com.ph"
               :class="[
-                'w-full px-3 py-1.5 rounded-md border text-xs text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-neutral-900 focus:ring-0 transition-colors',
+                'w-full px-3 py-2.5 rounded-xl border text-base sm:text-xs text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 transition-all',
                 errors.login ? 'border-rose-300 bg-rose-50/30' : 'border-neutral-200 hover:border-neutral-300'
               ]"
             />
@@ -49,7 +49,7 @@
 
           <!-- Password -->
           <div>
-            <label for="password" class="block text-[10px] font-mono uppercase tracking-wider text-neutral-500 mb-1">
+            <label for="password" class="block text-[10px] font-mono uppercase tracking-wider text-neutral-500 font-semibold mb-1">
               Password
             </label>
             <div class="relative">
@@ -61,16 +61,16 @@
                 autocomplete="current-password"
                 placeholder="••••••••"
                 :class="[
-                  'w-full px-3 py-1.5 pr-8 rounded-md border text-xs text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-neutral-900 focus:ring-0 transition-colors',
+                  'w-full px-3 py-2.5 pr-12 rounded-xl border text-base sm:text-xs text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 transition-all',
                   errors.password ? 'border-rose-300 bg-rose-50/30' : 'border-neutral-200 hover:border-neutral-300'
                 ]"
               />
               <button
                 type="button"
                 @click="showPassword = !showPassword"
-                class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-neutral-400 hover:text-neutral-600"
+                class="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-700 tap-target"
               >
-                <span class="text-[10px] font-mono">{{ showPassword ? 'Hide' : 'Show' }}</span>
+                <span class="text-[10px] font-mono font-medium">{{ showPassword ? 'Hide' : 'Show' }}</span>
               </button>
             </div>
             <p v-if="errors.password" class="mt-1 text-[11px] text-rose-600">
@@ -80,27 +80,27 @@
 
           <!-- Remember Me -->
           <div class="flex items-center justify-between pt-0.5">
-            <label class="flex items-center space-x-2 cursor-pointer select-none">
+            <label class="flex items-center space-x-2 cursor-pointer select-none tap-target">
               <input
                 v-model="form.remember"
                 type="checkbox"
-                class="w-3.5 h-3.5 rounded border-neutral-300 text-neutral-900 focus:ring-0"
+                class="w-4 h-4 rounded border-neutral-300 text-brand-600 focus:ring-brand-500"
               />
-              <span class="text-xs text-neutral-600">Remember session</span>
+              <span class="text-xs text-neutral-700 font-medium">Remember session</span>
             </label>
           </div>
 
-          <!-- Submit Button -->
+          <!-- Submit Button with min 44px tap target -->
           <button
             type="submit"
             :disabled="isSubmitting"
-            class="w-full mt-2 py-2 px-3 rounded-md bg-neutral-900 hover:bg-neutral-800 text-white font-medium text-xs transition-colors disabled:opacity-60 flex items-center justify-center space-x-1.5"
+            class="w-full mt-2 py-3 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs transition-colors disabled:opacity-60 flex items-center justify-center space-x-1.5 tap-target shadow-sm"
           >
-            <svg v-if="isSubmitting" class="animate-spin -ml-1 mr-1.5 h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+            <svg v-if="isSubmitting" class="animate-spin -ml-1 mr-1.5 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span>{{ isSubmitting ? 'Authenticating...' : 'Sign In' }}</span>
+            <span>{{ isSubmitting ? 'Authenticating...' : 'Sign In to Portal' }}</span>
           </button>
         </form>
 

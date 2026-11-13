@@ -32,10 +32,10 @@
             v-if="activeMainTab === 'users'"
             type="button"
             @click="openAddModal"
-            class="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-md bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-medium transition-colors"
+            class="min-h-[44px] inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white text-xs font-semibold transition-colors shadow-xs"
           >
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 4v16m8-8H4" />
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
             <span>Add User</span>
           </button>
@@ -43,30 +43,30 @@
       </div>
 
       <!-- Tab Switcher (Admin Only) -->
-      <div class="flex items-center space-x-4 border-b border-neutral-200">
+      <div class="flex items-center space-x-6 border-b border-neutral-200">
         <button
           type="button"
           @click="activeMainTab = 'users'"
           :class="[
-            'pb-2.5 text-xs font-medium border-b-2 transition-colors',
+            'min-h-[44px] pb-3 text-xs font-medium border-b-2 transition-colors flex items-center',
             activeMainTab === 'users'
-              ? 'border-neutral-900 text-neutral-900 font-semibold'
+              ? 'border-brand-600 text-brand-700 font-bold'
               : 'border-transparent text-neutral-500 hover:text-neutral-900'
           ]"
         >
-          User Accounts
+          Users &amp; Accounts
         </button>
         <button
           type="button"
           @click="activeMainTab = 'roles'"
           :class="[
-            'pb-2.5 text-xs font-medium border-b-2 transition-colors',
+            'min-h-[44px] pb-3 text-xs font-medium border-b-2 transition-colors flex items-center',
             activeMainTab === 'roles'
-              ? 'border-neutral-900 text-neutral-900 font-semibold'
+              ? 'border-brand-600 text-brand-700 font-bold'
               : 'border-transparent text-neutral-500 hover:text-neutral-900'
           ]"
         >
-          Roles &amp; Access
+          Roles &amp; Access Permissions
         </button>
       </div>
 
@@ -321,76 +321,74 @@
       </div>
     </div>
 
-    <!-- ADD USER MODAL -->
+    <!-- ADD USER MODAL (Full-screen mobile sheet on < 640px) -->
     <div
       v-if="showAddModal"
-      class="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/40 backdrop-blur-xs flex items-center justify-center p-4"
+      class="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
     >
-      <div class="bg-white rounded-lg max-w-lg w-full p-5 shadow-lg border border-neutral-200">
-        <div class="flex items-center justify-between pb-3 border-b border-neutral-100">
-          <h3 class="text-sm font-semibold text-neutral-900">Add New User Account</h3>
-          <button @click="showAddModal = false" class="text-neutral-400 hover:text-neutral-600">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+      <div class="bg-white rounded-t-2xl sm:rounded-xl max-w-lg w-full h-[90vh] sm:h-auto flex flex-col p-5 sm:p-6 shadow-xl border border-neutral-200 text-xs">
+        <div class="flex items-center justify-between pb-3 border-b border-neutral-100 shrink-0">
+          <h3 class="text-sm font-bold text-neutral-900">Add New User Account</h3>
+          <button @click="showAddModal = false" class="min-h-[44px] min-w-[44px] flex items-center justify-center text-neutral-400 hover:text-neutral-700 text-lg">
+            &times;
           </button>
         </div>
 
-        <form @submit.prevent="submitAddUser" class="space-y-3.5 mt-3 text-xs">
+        <form @submit.prevent="submitAddUser" class="space-y-4 mt-4 overflow-y-auto flex-1 pr-1 text-xs">
           <!-- Employee ID -->
           <div>
             <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-              Employee ID <span class="text-neutral-400">*</span>
+              Employee ID <span class="text-rose-500">*</span>
             </label>
             <input
               v-model.trim="addForm.employee_id"
               type="text"
               required
               placeholder="e.g. EMP00201"
-              class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
+              class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
             />
-            <p v-if="modalErrors.employee_id" class="mt-1 text-[11px] text-rose-600">{{ modalErrors.employee_id[0] }}</p>
+            <p v-if="modalErrors.employee_id" class="mt-1 text-[11px] text-rose-600 font-medium">{{ modalErrors.employee_id[0] }}</p>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-                First Name <span class="text-neutral-400">*</span>
+                First Name <span class="text-rose-500">*</span>
               </label>
               <input
                 v-model.trim="addForm.first_name"
                 type="text"
                 required
-                class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
+                class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
               />
-              <p v-if="modalErrors.first_name" class="mt-1 text-[11px] text-rose-600">{{ modalErrors.first_name[0] }}</p>
+              <p v-if="modalErrors.first_name" class="mt-1 text-[11px] text-rose-600 font-medium">{{ modalErrors.first_name[0] }}</p>
             </div>
             <div>
               <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-                Last Name <span class="text-neutral-400">*</span>
+                Last Name <span class="text-rose-500">*</span>
               </label>
               <input
                 v-model.trim="addForm.last_name"
                 type="text"
                 required
-                class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
+                class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
               />
-              <p v-if="modalErrors.last_name" class="mt-1 text-[11px] text-rose-600">{{ modalErrors.last_name[0] }}</p>
+              <p v-if="modalErrors.last_name" class="mt-1 text-[11px] text-rose-600 font-medium">{{ modalErrors.last_name[0] }}</p>
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-                Email Address <span class="text-neutral-400">*</span>
+                Email Address <span class="text-rose-500">*</span>
               </label>
               <input
                 v-model.trim="addForm.email"
                 type="email"
                 required
-                class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
+                class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
               />
-              <p v-if="modalErrors.email" class="mt-1 text-[11px] text-rose-600">{{ modalErrors.email[0] }}</p>
+              <p v-if="modalErrors.email" class="mt-1 text-[11px] text-rose-600 font-medium">{{ modalErrors.email[0] }}</p>
             </div>
             <div>
               <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
@@ -400,25 +398,25 @@
                 v-model.trim="addForm.branch_code"
                 type="text"
                 placeholder="Optional"
-                class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
+                class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
               />
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-                Role / Position <span class="text-neutral-400">*</span>
+                Role / Position <span class="text-rose-500">*</span>
               </label>
               <select
                 v-model="addForm.role_id"
                 required
-                class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 bg-white text-xs focus:border-neutral-900 focus:ring-0"
+                class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 bg-white text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
               >
                 <option value="">Select a role...</option>
                 <option v-for="r in roles" :key="r.id" :value="r.id">{{ r.display_name }}</option>
               </select>
-              <p v-if="modalErrors.role_id" class="mt-1 text-[11px] text-rose-600">{{ modalErrors.role_id[0] }}</p>
+              <p v-if="modalErrors.role_id" class="mt-1 text-[11px] text-rose-600 font-medium">{{ modalErrors.role_id[0] }}</p>
             </div>
             <div>
               <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
@@ -426,7 +424,7 @@
               </label>
               <select
                 v-model="addForm.status"
-                class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 bg-white text-xs focus:border-neutral-900 focus:ring-0"
+                class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 bg-white text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
               >
                 <option value="active">Active</option>
                 <option value="pending">Pending</option>
@@ -437,30 +435,30 @@
 
           <div>
             <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-              Temporary Password <span class="text-neutral-400">*</span>
+              Temporary Password <span class="text-rose-500">*</span>
             </label>
             <input
               v-model="addForm.password"
               type="password"
               required
               placeholder="Minimum 8 characters"
-              class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
+              class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
             />
-            <p v-if="modalErrors.password" class="mt-1 text-[11px] text-rose-600">{{ modalErrors.password[0] }}</p>
+            <p v-if="modalErrors.password" class="mt-1 text-[11px] text-rose-600 font-medium">{{ modalErrors.password[0] }}</p>
           </div>
 
-          <div class="flex items-center justify-end space-x-2 pt-3 border-t border-neutral-100">
+          <div class="sticky bottom-0 bg-white pt-4 pb-2 border-t border-neutral-100 flex items-center justify-end space-x-3 shrink-0">
             <button
               type="button"
               @click="showAddModal = false"
-              class="px-3 py-1.5 text-xs text-neutral-600 hover:text-neutral-900"
+              class="min-h-[44px] px-4 py-2 text-neutral-600 hover:text-neutral-900 font-medium"
             >
               Cancel
             </button>
             <button
               type="submit"
               :disabled="isSubmittingModal"
-              class="px-3.5 py-1.5 text-xs font-medium bg-neutral-900 hover:bg-neutral-800 text-white rounded-md transition-colors disabled:opacity-50"
+              class="min-h-[44px] px-5 py-2 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white rounded-lg font-semibold text-xs shadow-xs disabled:opacity-50"
             >
               {{ isSubmittingModal ? 'Saving...' : 'Create Account' }}
             </button>
@@ -469,78 +467,76 @@
       </div>
     </div>
 
-    <!-- EDIT USER MODAL -->
+    <!-- EDIT USER MODAL (Full-screen mobile sheet on < 640px) -->
     <div
       v-if="showEditModal"
-      class="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/40 backdrop-blur-xs flex items-center justify-center p-4"
+      class="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
     >
-      <div class="bg-white rounded-lg max-w-lg w-full p-5 shadow-lg border border-neutral-200">
-        <div class="flex items-center justify-between pb-3 border-b border-neutral-100">
+      <div class="bg-white rounded-t-2xl sm:rounded-xl max-w-lg w-full h-[90vh] sm:h-auto flex flex-col p-5 sm:p-6 shadow-xl border border-neutral-200 text-xs">
+        <div class="flex items-center justify-between pb-3 border-b border-neutral-100 shrink-0">
           <div>
-            <h3 class="text-sm font-semibold text-neutral-900">Edit User Details</h3>
-            <p class="text-xs text-neutral-500 font-mono">{{ editingUser?.employee_id }}</p>
+            <h3 class="text-sm font-bold text-neutral-900">Edit User Details</h3>
+            <p class="text-xs text-brand-700 font-mono font-medium mt-0.5">{{ editingUser?.employee_id }}</p>
           </div>
-          <button @click="showEditModal = false" class="text-neutral-400 hover:text-neutral-600">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+          <button @click="showEditModal = false" class="min-h-[44px] min-w-[44px] flex items-center justify-center text-neutral-400 hover:text-neutral-700 text-lg">
+            &times;
           </button>
         </div>
 
-        <form @submit.prevent="submitEditUser" class="space-y-3.5 mt-3 text-xs">
+        <form @submit.prevent="submitEditUser" class="space-y-4 mt-4 overflow-y-auto flex-1 pr-1 text-xs">
           <!-- Employee ID -->
           <div>
             <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-              Employee ID <span class="text-neutral-400">*</span>
+              Employee ID <span class="text-rose-500">*</span>
             </label>
             <input
               v-model.trim="editForm.employee_id"
               type="text"
               required
-              class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
+              class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
             />
-            <p v-if="modalErrors.employee_id" class="mt-1 text-[11px] text-rose-600">{{ modalErrors.employee_id[0] }}</p>
+            <p v-if="modalErrors.employee_id" class="mt-1 text-[11px] text-rose-600 font-medium">{{ modalErrors.employee_id[0] }}</p>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-                First Name <span class="text-neutral-400">*</span>
+                First Name <span class="text-rose-500">*</span>
               </label>
               <input
                 v-model.trim="editForm.first_name"
                 type="text"
                 required
-                class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
+                class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
               />
-              <p v-if="modalErrors.first_name" class="mt-1 text-[11px] text-rose-600">{{ modalErrors.first_name[0] }}</p>
+              <p v-if="modalErrors.first_name" class="mt-1 text-[11px] text-rose-600 font-medium">{{ modalErrors.first_name[0] }}</p>
             </div>
             <div>
               <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-                Last Name <span class="text-neutral-400">*</span>
+                Last Name <span class="text-rose-500">*</span>
               </label>
               <input
                 v-model.trim="editForm.last_name"
                 type="text"
                 required
-                class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
+                class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
               />
-              <p v-if="modalErrors.last_name" class="mt-1 text-[11px] text-rose-600">{{ modalErrors.last_name[0] }}</p>
+              <p v-if="modalErrors.last_name" class="mt-1 text-[11px] text-rose-600 font-medium">{{ modalErrors.last_name[0] }}</p>
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-                Email Address <span class="text-neutral-400">*</span>
+                Email Address <span class="text-rose-500">*</span>
               </label>
               <input
                 v-model.trim="editForm.email"
                 type="email"
                 required
-                class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
+                class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
               />
-              <p v-if="modalErrors.email" class="mt-1 text-[11px] text-rose-600">{{ modalErrors.email[0] }}</p>
+              <p v-if="modalErrors.email" class="mt-1 text-[11px] text-rose-600 font-medium">{{ modalErrors.email[0] }}</p>
             </div>
             <div>
               <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
@@ -550,20 +546,20 @@
                 v-model.trim="editForm.branch_code"
                 type="text"
                 placeholder="Optional"
-                class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
+                class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
               />
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-                Role / Position <span class="text-neutral-400">*</span>
+                Role / Position <span class="text-rose-500">*</span>
               </label>
               <select
                 v-model="editForm.role_id"
                 required
-                class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 bg-white text-xs focus:border-neutral-900 focus:ring-0"
+                class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 bg-white text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
               >
                 <option v-for="r in roles" :key="r.id" :value="r.id">{{ r.display_name }}</option>
               </select>
@@ -575,7 +571,7 @@
               <select
                 v-model="editForm.status"
                 :disabled="editingUser?.id === currentUser?.id"
-                class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 bg-white text-xs focus:border-neutral-900 focus:ring-0 disabled:bg-neutral-100"
+                class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 bg-white text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 disabled:bg-neutral-100"
               >
                 <option value="active">Active</option>
                 <option value="pending">Pending</option>
@@ -593,23 +589,23 @@
               v-model="editForm.password"
               type="password"
               placeholder="Leave blank or min. 8 characters"
-              class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
+              class="w-full min-h-[44px] px-3 py-2 rounded-lg border border-neutral-300 text-base sm:text-xs text-neutral-900 focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
             />
-            <p v-if="modalErrors.password" class="mt-1 text-[11px] text-rose-600">{{ modalErrors.password[0] }}</p>
+            <p v-if="modalErrors.password" class="mt-1 text-[11px] text-rose-600 font-medium">{{ modalErrors.password[0] }}</p>
           </div>
 
-          <div class="flex items-center justify-end space-x-2 pt-3 border-t border-neutral-100">
+          <div class="sticky bottom-0 bg-white pt-4 pb-2 border-t border-neutral-100 flex items-center justify-end space-x-3 shrink-0">
             <button
               type="button"
               @click="showEditModal = false"
-              class="px-3 py-1.5 text-xs text-neutral-600 hover:text-neutral-900"
+              class="min-h-[44px] px-4 py-2 text-neutral-600 hover:text-neutral-900 font-medium"
             >
               Cancel
             </button>
             <button
               type="submit"
               :disabled="isSubmittingModal"
-              class="px-3.5 py-1.5 text-xs font-medium bg-neutral-900 hover:bg-neutral-800 text-white rounded-md transition-colors disabled:opacity-50"
+              class="min-h-[44px] px-5 py-2 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white rounded-lg font-semibold text-xs shadow-xs disabled:opacity-50"
             >
               {{ isSubmittingModal ? 'Saving Changes...' : 'Save Changes' }}
             </button>

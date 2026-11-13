@@ -203,20 +203,22 @@
       <!-- ============================================================= -->
       <!-- VIEW 1: CALENDAR / GRID VIEW                                   -->
       <!-- ============================================================= -->
-      <div v-if="viewMode === 'grid'" class="bg-white rounded-lg border border-neutral-200 overflow-hidden">
-        <!-- Calendar Days Header -->
-        <div class="grid grid-cols-7 border-b border-neutral-200 bg-neutral-50 text-center text-[10px] font-mono uppercase tracking-wider text-neutral-400 py-2.5">
-          <div>Sun</div>
-          <div>Mon</div>
-          <div>Tue</div>
-          <div>Wed</div>
-          <div>Thu</div>
-          <div>Fri</div>
-          <div>Sat</div>
-        </div>
+      <div v-if="viewMode === 'grid'" class="bg-white rounded-xl border border-neutral-200/80 overflow-hidden shadow-xs">
+        <div class="overflow-x-auto">
+          <div class="min-w-[580px] sm:min-w-0">
+            <!-- Calendar Days Header -->
+            <div class="grid grid-cols-7 border-b border-neutral-200 bg-neutral-50 text-center text-[10px] font-mono uppercase tracking-wider text-neutral-400 py-2.5">
+              <div>Sun</div>
+              <div>Mon</div>
+              <div>Tue</div>
+              <div>Wed</div>
+              <div>Thu</div>
+              <div>Fri</div>
+              <div>Sat</div>
+            </div>
 
-        <!-- Calendar Day Cells Grid -->
-        <div class="grid grid-cols-7 divide-x divide-y divide-neutral-100 auto-rows-fr min-h-[500px]">
+            <!-- Calendar Day Cells Grid -->
+            <div class="grid grid-cols-7 divide-x divide-y divide-neutral-100 auto-rows-fr min-h-[500px]">
           <div
             v-for="(day, idx) in calendarDays"
             :key="idx"
@@ -270,12 +272,99 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
 
       <!-- ============================================================= -->
       <!-- VIEW 2: LIST VIEW (BRD Specified Core Fields)                  -->
       <!-- ============================================================= -->
-      <div v-else class="bg-white rounded-lg border border-neutral-200 overflow-hidden">
-        <div class="overflow-x-auto">
+      <div v-else class="bg-white rounded-xl border border-neutral-200/80 overflow-hidden shadow-xs">
+        <!-- MOBILE VIEW (< 640px): Stacked Cards -->
+        <div class="block sm:hidden divide-y divide-neutral-100">
+          <div v-if="isLoading" class="p-8 text-center text-xs text-neutral-400">
+            Loading visit schedules...
+          </div>
+          <div v-else-if="listSchedules.length === 0" class="p-8 text-center text-xs text-neutral-400">
+            No store visit records found for this period.
+          </div>
+          <div
+            v-for="item in listSchedules"
+            :key="item.id"
+            class="p-4 space-y-3 hover:bg-neutral-50/40 transition-colors"
+          >
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <span class="text-[10px] font-mono uppercase text-brand-600 font-semibold bg-brand-50 px-1.5 py-0.5 rounded">
+                  {{ item.audit_type }}
+                </span>
+                <h3 class="text-xs font-bold text-neutral-900 mt-1">
+                  {{ item.store?.store_name }}
+                </h3>
+                <p class="text-[10px] font-mono text-neutral-400">
+                  {{ item.store?.store_code }} &bull; {{ item.store?.area?.area_name }}
+                </p>
+              </div>
+              <span
+                class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-mono border font-semibold"
+                :class="getStatusBadgeClass(item.status)"
+              >
+                <span class="w-1.5 h-1.5 rounded-full" :class="getStatusDotClass(item.status)"></span>
+                <span>{{ formatStatus(item.status) }}</span>
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-[11px] font-mono p-2.5 rounded-lg bg-neutral-50 border border-neutral-100 text-neutral-600">
+              <div>
+                <span class="text-neutral-400 block text-[10px]">Date Visited:</span>
+                <span class="font-medium text-neutral-900">{{ formatDate(item.scheduled_date) }}</span>
+              </div>
+              <div>
+                <span class="text-neutral-400 block text-[10px]">Supervisor:</span>
+                <span class="font-medium text-neutral-900 truncate block">{{ item.supervisor?.first_name }} {{ item.supervisor?.last_name?.[0] }}.</span>
+              </div>
+              <div>
+                <span class="text-neutral-400 block text-[10px]">Time Started:</span>
+                <span class="text-neutral-700">{{ item.started_at ? formatTime(item.started_at) : '—' }}</span>
+              </div>
+              <div>
+                <span class="text-neutral-400 block text-[10px]">Time End:</span>
+                <span class="text-neutral-700">{{ item.completed_at ? formatTime(item.completed_at) : (item.status === 'in_progress' ? 'In Progress' : '—') }}</span>
+              </div>
+            </div>
+
+            <!-- Action buttons with min 44px tap targets -->
+            <div class="flex items-center justify-end space-x-2 pt-1 border-t border-neutral-100">
+              <button
+                v-if="isSupervisor && item.supervisor_id === user?.id && item.status === 'scheduled'"
+                type="button"
+                @click="triggerStatusUpdate(item, 'in_progress')"
+                class="tap-target px-4 py-2 text-xs font-bold bg-brand-600 hover:bg-brand-700 text-white rounded-lg transition-colors flex items-center shadow-xs"
+              >
+                Start Visit
+              </button>
+
+              <button
+                v-if="isSupervisor && item.supervisor_id === user?.id && item.status === 'in_progress'"
+                type="button"
+                @click="triggerStatusUpdate(item, 'completed')"
+                class="tap-target px-4 py-2 text-xs font-bold border border-brand-600 text-brand-600 hover:bg-brand-50 rounded-lg transition-colors flex items-center"
+              >
+                End Visit
+              </button>
+
+              <button
+                type="button"
+                @click="openEventDetails(item)"
+                class="tap-target px-3.5 py-2 text-xs font-semibold rounded-lg border border-neutral-200 text-neutral-700 hover:bg-neutral-50 transition-colors flex items-center"
+              >
+                Details
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- DESKTOP VIEW (>= 640px): Standard Table -->
+        <div class="hidden sm:block overflow-x-auto">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
               <tr class="bg-neutral-50 border-b border-neutral-200 text-neutral-500 font-mono uppercase tracking-wider text-[10px]">
@@ -412,108 +501,113 @@
     <!-- ============================================================= -->
     <!-- MODAL: SCHEDULE NEW VISIT                                      -->
     <!-- ============================================================= -->
-    <div v-if="showScheduleModal" class="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="bg-white rounded-lg max-w-lg w-full p-5 shadow-lg border border-neutral-200">
-        <div class="flex items-center justify-between pb-3 border-b border-neutral-100">
-          <h3 class="text-sm font-semibold text-neutral-900">Schedule Store Audit Visit</h3>
-          <button @click="showScheduleModal = false" class="text-neutral-400 hover:text-neutral-600">&times;</button>
+    <div
+      v-if="showScheduleModal"
+      class="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/60 backdrop-blur-xs flex sm:items-center sm:justify-center p-0 sm:p-4"
+    >
+      <div class="fixed inset-0 sm:inset-auto sm:relative bg-white sm:rounded-2xl max-w-lg w-full h-full sm:h-auto flex flex-col p-5 shadow-2xl border border-neutral-200">
+        <div class="flex items-center justify-between pb-3 border-b border-neutral-100 shrink-0">
+          <h3 class="text-base font-bold text-neutral-900">Schedule Store Audit Visit</h3>
+          <button @click="showScheduleModal = false" class="tap-target p-2 text-neutral-400 hover:text-neutral-700 text-lg">&times;</button>
         </div>
 
-        <form @submit.prevent="submitScheduleForm" class="space-y-3.5 mt-3 text-xs">
-          <!-- Audit Type -->
-          <div>
-            <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-              Audit Department Track <span class="text-neutral-400">*</span>
-            </label>
-            <select
-              v-model="scheduleForm.audit_type"
-              @change="loadSupervisorsForSchedule"
-              :disabled="!isAdmin && auditType !== null"
-              class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 bg-white text-xs focus:border-neutral-900 focus:ring-0"
-            >
-              <option value="treasury">Treasury Audit</option>
-              <option value="cashier">Cashier Audit</option>
-            </select>
-          </div>
-
-          <!-- Store Selection -->
-          <div>
-            <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-              Target Store Visited <span class="text-neutral-400">*</span>
-            </label>
-            <select
-              v-model="scheduleForm.store_id"
-              required
-              class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 bg-white text-xs focus:border-neutral-900 focus:ring-0"
-            >
-              <option value="" disabled>Select store location...</option>
-              <option v-for="st in storesDropdown" :key="st.id" :value="st.id">
-                {{ st.store_name }} ({{ st.store_code }})
-              </option>
-            </select>
-            <p v-if="scheduleErrors.store_id" class="mt-1 text-rose-600 text-[11px]">{{ scheduleErrors.store_id[0] }}</p>
-          </div>
-
-          <!-- Supervisor Selection -->
-          <div>
-            <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-              Assigned Area Supervisor <span class="text-neutral-400">*</span>
-            </label>
-            <select
-              v-model="scheduleForm.supervisor_id"
-              required
-              class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 bg-white text-xs focus:border-neutral-900 focus:ring-0"
-            >
-              <option value="" disabled>Select supervisor...</option>
-              <option v-for="sup in eligibleSupervisors" :key="sup.id" :value="sup.id">
-                {{ sup.first_name }} {{ sup.last_name }} ({{ sup.employee_id }})
-              </option>
-            </select>
-            <p v-if="scheduleErrors.supervisor_id" class="mt-1 text-rose-600 text-[11px]">{{ scheduleErrors.supervisor_id[0] }}</p>
-          </div>
-
-          <!-- Scheduled Date Visited -->
-          <div class="grid grid-cols-2 gap-3">
+        <form @submit.prevent="submitScheduleForm" class="flex-1 flex flex-col min-h-0">
+          <div class="flex-1 overflow-y-auto py-3 space-y-3.5 pr-1 text-xs">
+            <!-- Audit Type -->
             <div>
-              <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-                Date Visited <span class="text-neutral-400">*</span>
+              <label class="block font-semibold text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
+                Audit Department Track <span class="text-neutral-400">*</span>
               </label>
-              <input
-                v-model="scheduleForm.scheduled_date"
-                type="date"
+              <select
+                v-model="scheduleForm.audit_type"
+                @change="loadSupervisorsForSchedule"
+                :disabled="!isAdmin && auditType !== null"
+                class="w-full text-base sm:text-xs px-3 py-2 rounded-lg border border-neutral-200 bg-white focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
+              >
+                <option value="treasury">Treasury Audit</option>
+                <option value="cashier">Cashier Audit</option>
+              </select>
+            </div>
+
+            <!-- Store Selection -->
+            <div>
+              <label class="block font-semibold text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
+                Target Store Visited <span class="text-neutral-400">*</span>
+              </label>
+              <select
+                v-model="scheduleForm.store_id"
                 required
-                class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
-              />
-              <p v-if="scheduleErrors.scheduled_date" class="mt-1 text-rose-600 text-[11px]">{{ scheduleErrors.scheduled_date[0] }}</p>
+                class="w-full text-base sm:text-xs px-3 py-2 rounded-lg border border-neutral-200 bg-white focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
+              >
+                <option value="" disabled>Select store location...</option>
+                <option v-for="st in storesDropdown" :key="st.id" :value="st.id">
+                  {{ st.store_name }} ({{ st.store_code }})
+                </option>
+              </select>
+              <p v-if="scheduleErrors.store_id" class="mt-1 text-rose-600 text-[11px]">{{ scheduleErrors.store_id[0] }}</p>
             </div>
+
+            <!-- Supervisor Selection -->
             <div>
-              <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-                End Date (Optional)
+              <label class="block font-semibold text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
+                Assigned Area Supervisor <span class="text-neutral-400">*</span>
               </label>
-              <input
-                v-model="scheduleForm.end_date"
-                type="date"
-                class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
-              />
+              <select
+                v-model="scheduleForm.supervisor_id"
+                required
+                class="w-full text-base sm:text-xs px-3 py-2 rounded-lg border border-neutral-200 bg-white focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
+              >
+                <option value="" disabled>Select supervisor...</option>
+                <option v-for="sup in eligibleSupervisors" :key="sup.id" :value="sup.id">
+                  {{ sup.first_name }} {{ sup.last_name }} ({{ sup.employee_id }})
+                </option>
+              </select>
+              <p v-if="scheduleErrors.supervisor_id" class="mt-1 text-rose-600 text-[11px]">{{ scheduleErrors.supervisor_id[0] }}</p>
+            </div>
+
+            <!-- Scheduled Date Visited -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-semibold text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
+                  Date Visited <span class="text-neutral-400">*</span>
+                </label>
+                <input
+                  v-model="scheduleForm.scheduled_date"
+                  type="date"
+                  required
+                  class="w-full text-base sm:text-xs px-3 py-2 rounded-lg border border-neutral-200 focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
+                />
+                <p v-if="scheduleErrors.scheduled_date" class="mt-1 text-rose-600 text-[11px]">{{ scheduleErrors.scheduled_date[0] }}</p>
+              </div>
+              <div>
+                <label class="block font-semibold text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
+                  End Date (Optional)
+                </label>
+                <input
+                  v-model="scheduleForm.end_date"
+                  type="date"
+                  class="w-full text-base sm:text-xs px-3 py-2 rounded-lg border border-neutral-200 focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
+                />
+              </div>
+            </div>
+
+            <!-- Notes -->
+            <div>
+              <label class="block font-semibold text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
+                Visit Instructions / Notes
+              </label>
+              <textarea
+                v-model="scheduleForm.notes"
+                rows="3"
+                placeholder="e.g. Conduct full cash count and review safe compliance..."
+                class="w-full text-base sm:text-xs px-3 py-2 rounded-lg border border-neutral-200 focus:border-brand-600 focus:ring-1 focus:ring-brand-600"
+              ></textarea>
             </div>
           </div>
 
-          <!-- Notes -->
-          <div>
-            <label class="block font-medium text-neutral-700 uppercase tracking-wider text-[10px] mb-1">
-              Visit Instructions / Notes
-            </label>
-            <textarea
-              v-model="scheduleForm.notes"
-              rows="2"
-              placeholder="e.g. Conduct full cash count and review safe compliance..."
-              class="w-full px-2.5 py-1.5 rounded-md border border-neutral-200 text-xs focus:border-neutral-900 focus:ring-0"
-            ></textarea>
-          </div>
-
-          <div class="flex items-center justify-end space-x-2 pt-3 border-t border-neutral-100">
-            <button type="button" @click="showScheduleModal = false" class="px-3 py-1.5 text-neutral-600 hover:text-neutral-900 text-xs font-medium">Cancel</button>
-            <button type="submit" :disabled="isSubmittingSchedule" class="px-3.5 py-1.5 font-medium bg-neutral-900 hover:bg-neutral-800 text-white rounded-md text-xs transition-colors">
+          <div class="flex items-center justify-end space-x-2 pt-3 border-t border-neutral-100 shrink-0">
+            <button type="button" @click="showScheduleModal = false" class="tap-target px-4 py-2 text-neutral-600 hover:text-neutral-900 text-xs font-semibold">Cancel</button>
+            <button type="submit" :disabled="isSubmittingSchedule" class="tap-target px-5 py-2.5 font-bold bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs transition-colors shadow-xs">
               {{ isSubmittingSchedule ? 'Scheduling...' : 'Confirm Schedule' }}
             </button>
           </div>
@@ -524,19 +618,22 @@
     <!-- ============================================================= -->
     <!-- MODAL: EVENT DETAILS & STATUS UPDATE                          -->
     <!-- ============================================================= -->
-    <div v-if="showDetailsModal && selectedEvent" class="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="bg-white rounded-lg max-w-lg w-full p-5 shadow-lg border border-neutral-200">
-        <div class="flex items-center justify-between pb-3 border-b border-neutral-100">
+    <div
+      v-if="showDetailsModal && selectedEvent"
+      class="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/60 backdrop-blur-xs flex sm:items-center sm:justify-center p-0 sm:p-4"
+    >
+      <div class="fixed inset-0 sm:inset-auto sm:relative bg-white sm:rounded-2xl max-w-lg w-full h-full sm:h-auto flex flex-col p-5 shadow-2xl border border-neutral-200">
+        <div class="flex items-center justify-between pb-3 border-b border-neutral-100 shrink-0">
           <div>
-            <span class="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-neutral-200 bg-neutral-50 text-neutral-600">
+            <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full font-bold bg-brand-50 text-brand-700 border border-brand-200">
               {{ selectedEvent.audit_type }} Audit
             </span>
-            <h3 class="text-sm font-semibold text-neutral-900 mt-1">{{ selectedEvent.store?.store_name }}</h3>
+            <h3 class="text-base font-bold text-neutral-900 mt-1">{{ selectedEvent.store?.store_name }}</h3>
           </div>
-          <button @click="showDetailsModal = false" class="text-neutral-400 hover:text-neutral-600">&times;</button>
+          <button @click="showDetailsModal = false" class="tap-target p-2 text-neutral-400 hover:text-neutral-700 text-lg">&times;</button>
         </div>
 
-        <div class="space-y-3 my-3 text-xs">
+        <div class="flex-1 overflow-y-auto py-3 space-y-3.5 text-xs pr-1">
           <!-- 4 Core Fields Grid -->
           <div class="grid grid-cols-2 gap-2.5 p-3 bg-neutral-50 rounded-md border border-neutral-200">
             <div>
@@ -612,8 +709,8 @@
           </div>
         </div>
 
-        <div class="flex items-center justify-end pt-3 border-t border-slate-100">
-          <button type="button" @click="showDetailsModal = false" class="px-4 py-1.5 text-xs font-semibold text-slate-600">Close</button>
+        <div class="flex items-center justify-end pt-3 border-t border-neutral-100 shrink-0 sticky bottom-0 bg-white">
+          <button type="button" @click="showDetailsModal = false" class="tap-target px-5 py-2 text-xs font-bold text-neutral-700 hover:text-black">Close</button>
         </div>
       </div>
     </div>
